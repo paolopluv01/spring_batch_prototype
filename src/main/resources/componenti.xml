@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inventory system="Greyshield_ERP" exportDate="2026-07-29T15:00:00Z">
+    <metadata>
+        <department>Assistenza Post-Vendita</department>
+        <operatorId>OP-8472</operatorId>
+        <totalItems>3</totalItems>
+    </metadata>
+
+    <components>
+        <component id="BRK-009" category="Sicurezza">
+            <name>Centralina ABS Modulare</name>
+            <manufacturer code="BOSCH">Bosch GmbH</manufacturer>
+            <qualityClass>A</qualityClass>
+            <metrics>
+                <failureRatePercentage>0.02</failureRatePercentage>
+                <isCritical>true</isCritical>
+                <estimatedLifeSpan unit="km">150000</estimatedLifeSpan>
+            </metrics>
+            <pricing currency="EUR">
+                <productionCost>185.50</productionCost>
+                <retailPrice>450.00</retailPrice>
+            </pricing>
+            <compatibility>
+                <model year="2023">Toyota Yaris Cross</model>
+                <model year="2024">Toyota Corolla</model>
+            </compatibility>
+        </component>
+
+        <component id="FLT-112" category="Manutenzione Ordinaria">
+            <name>Filtro Abitacolo a Carboni Attivi</name>
+            <manufacturer code="VAL">Valeo</manufacturer>
+            <qualityClass>B</qualityClass>
+            <metrics>
+                <failureRatePercentage>1.50</failureRatePercentage>
+                <isCritical>false</isCritical>
+                <estimatedLifeSpan unit="months">12</estimatedLifeSpan>
+            </metrics>
+            <pricing currency="EUR">
+                <productionCost>4.20</productionCost>
+                <retailPrice>22.00</retailPrice>
+            </pricing>
+            <compatibility>
+                <model year="2020">Toyota Yaris</model>
+                <model year="2021">Toyota Yaris</model>
+                <model year="2022">Toyota Yaris</model>
+            </compatibility>
+        </component>
+
+        <component id="SENS-044" category="Elettronica">
+            <name>Sensore Pressione Pneumatici (TPMS)</name>
+            <manufacturer code="CONT">Continental</manufacturer>
+            <qualityClass>C</qualityClass>
+            <metrics>
+                <failureRatePercentage>0.85</failureRatePercentage>
+                <isCritical>false</isCritical>
+                <estimatedLifeSpan unit="km">80000</estimatedLifeSpan>
+            </metrics>
+            <pricing currency="EUR">
+                <productionCost>12.80</productionCost>
+                <retailPrice>45.50</retailPrice>
+            </pricing>
+            <compatibility>
+                <model year="ALL">Universal M1</model>
+            </compatibility>
+        </component>
+    </components>
+</inventory>
