@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.*;
 
 @Entity
 @Table(name = "componenti_inventario")
-@XmlRootElement(name = "component")
+@XmlRootElement(name = "component", namespace = "http://www.greyshield.com/schema/inventory")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Component {
 
@@ -18,13 +18,16 @@ public class Component {
     @XmlAttribute(name = "category")
     private String category;
 
-    @XmlElement(name = "name")
+    // 2. Se l'XML usa un default namespace, spesso è necessario indicarlo 
+    // anche sui singoli elementi figli affinché vengano mappati correttamente.
+
+    @XmlElement(name = "name", namespace = "http://www.greyshield.com/schema/inventory")
     private String name;
 
-    @XmlElement(name = "qualityClass")
+    @XmlElement(name = "qualityClass", namespace = "http://www.greyshield.com/schema/inventory")
     private String qualityClass;
 
-    @XmlElement(name = "manufacturer")
+    @XmlElement(name = "manufacturer", namespace = "http://www.greyshield.com/schema/inventory")
     private String manufacturer;
 
     // Aggiungi i getter, i setter e il metodo toString()

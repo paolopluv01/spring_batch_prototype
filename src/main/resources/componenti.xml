@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<inventory system="Greyshield_ERP" exportDate="2026-07-29T15:00:00Z">
+<inventory  xmlns="http://www.greyshield.com/schema/inventory"
+            system="Greyshield_ERP" exportDate="2026-07-29T15:00:00Z">
     <metadata>
         <department>Assistenza Post-Vendita</department>
         <operatorId>OP-8472</operatorId>

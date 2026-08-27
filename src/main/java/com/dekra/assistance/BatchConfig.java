@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.boot.ApplicationRunner;
 
 @Configuration
 @EnableBatchProcessing
@@ -30,7 +31,7 @@ public class BatchConfig {
         return new StaxEventItemReaderBuilder<Component>()
                 .name("componentXmlReader")
                 .resource(new ClassPathResource("componenti.xml")) // Assicurati che il file sia in src/main/resources
-                .addFragmentRootElements("component")
+                .addFragmentRootElements("{http://www.greyshield.com/schema/inventory}component")
                 .unmarshaller(marshaller)
                 .build();
     }
@@ -58,20 +59,37 @@ public class BatchConfig {
     
     // 4. CONFIGURAZIONE STEP E JOB
     @Bean
-    public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager, ComponentRepository repository) {
         return new StepBuilder("elaborazioneComponentiStep", jobRepository)
                 .<Component, Component>chunk(10) // Elabora blocchi di 10 elementi
                 .reader(reader())
                 .processor(processor())
-                .writer(writer(null))// Passa il repository corretto qui
+                .writer(writer(repository))// Passa il repository corretto qui
                 .transactionManager(transactionManager)// Assicurati di avere un PlatformTransactionManager configurato
                 .build();
     }
+    // 5. CONFIGURAZIONE JOB
     @Bean
     public Job importXmlJob(JobRepository jobRepository, Step step1) {
         return new JobBuilder("importXmlJob", jobRepository)
                 .start(step1)
                 .build();
+    }
+    // 6. VERIFICA POST-ESECUZIONE: Stampa a terminale
+    @Bean
+    public ApplicationRunner controllaDatabase(ComponentRepository repository) {
+        return args -> {
+            System.out.println("\n=========================================");
+            System.out.println("VERIFICA SALVATAGGIO IN H2 (FINE BATCH):");
+            System.out.println("=========================================");
+            
+            repository.findAll().forEach(componente -> {
+                System.out.println("Presente in DB -> ID: " + componente.getId() + 
+                                   " | Nome: " + componente.getName());
+            });
+            
+            System.out.println("=========================================\n");
+        };
     }
     
 }
