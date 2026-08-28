@@ -1,39 +1,60 @@
-Spring Batch: Automotive Inventory ETL
-This repository contains a didactic Spring Boot application designed to demonstrate the core concepts of Spring Batch and Spring Data JPA. It implements a robust ETL (Extract, Transform, Load) pipeline that processes a moderately complex XML catalog of automotive spare parts and persists the filtered data into a relational database.
+# Spring Batch: Automotive Inventory ETL
 
-🎯 Project Overview
-The application simulates a nightly batch job for an automotive post-sales department. It reads an XML export of spare parts (containing metrics like wear rates, quality classes, and pricing), applies specific business rules to filter the inventory, and saves the valid components into an in-memory database.
+Applicazione didattica Spring Boot che dimostra un flusso ETL con Spring Batch, JAXB e Spring Data JPA. Il job legge un catalogo XML di componenti automobilistici, applica una regola di filtro e salva i componenti validi in un database H2.
 
-Key Learning Objectives
-Chunk-based Processing: Understanding how Spring Batch reads, processes, and writes data in transactional chunks rather than loading entire files into memory.
+## Funzionalita principali
 
-XML Unmarshalling: Mapping XML fragments to Java POJOs using StaxEventItemReader and JAXB annotations.
+- Lettura a chunk tramite `StaxEventItemReader`, senza caricare l'intero XML in memoria.
+- Deserializzazione dei fragment XML in oggetti `Component` tramite JAXB.
+- Scarto dei componenti con `qualityClass` uguale a `C` nel processor.
+- Persistenza dei componenti accettati tramite `RepositoryItemWriter` e `ComponentRepository`.
+- Verifica dei dati salvati su H2 tramite test di integrazione.
 
-Database Persistence: Utilizing RepositoryItemWriter to seamlessly save processed items via Spring Data JPA.
+## Gestione del namespace XML
 
-In-Memory Testing: Configuring and querying an H2 database using the built-in web console.
+Il file `src/main/resources/componenti.xml` utilizza il namespace predefinito:
 
-Architecture: The Batch Job
-The core of the application is a single Spring Batch Job consisting of one Step, which is divided into three distinct phases:
+```xml
+<inventory xmlns="http://www.greyshield.com/schema/inventory">
+```
 
-Reader (StaxEventItemReader): Reads the inventario.xml file located in the classpath. Instead of loading the entire file, it streams the XML and binds each <component> fragment to a Componente Java entity.
+Per consentire il corretto unmarshalling JAXB:
 
-Processor (ItemProcessor): Applies business logic to each item. In this scenario, it filters out components with a specific quality class (e.g., ignoring class "C" parts) by returning null, preventing them from reaching the writer.
+- `Component` dichiara `@XmlRootElement` con nome `component` e namespace `http://www.greyshield.com/schema/inventory`.
+- Gli elementi XML mappati (`name`, `qualityClass`, `manufacturer`) riportano lo stesso namespace nelle annotazioni `@XmlElement`.
+- Il reader seleziona esplicitamente i fragment tramite `addFragmentRootElements("{http://www.greyshield.com/schema/inventory}component")`.
 
-Writer (RepositoryItemWriter): Takes the chunk of processed Componente entities and persists them to the H2 database utilizing the ComponenteRepository (Spring Data JPA).
+In questo modo il reader riconosce solo gli elementi `component` appartenenti al namespace previsto, evitando che elementi con lo stesso nome ma namespace diverso vengano interpretati come componenti del catalogo.
 
-🚀 Getting Started
-Prerequisites
-JDK 21 installed on your machine.
+## Struttura del job
 
-Maven installed (or use the provided Maven wrapper).
+Il job `importXmlJob` contiene uno step con tre fasi:
 
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+1. **Reader**: legge `componenti.xml` dal classpath e converte ogni fragment `component` in un oggetto `Component`.
+2. **Processor**: filtra i componenti di classe `C` restituendo `null`; gli altri elementi proseguono nel flusso.
+3. **Writer**: salva i componenti filtrati nel database H2.
 
-Build and run the application using Maven:
+## Test di integrazione
 
+`BatchIntegrationTest` avvia il contesto Spring e l'intero job tramite `JobOperatorTestUtils`.
+
+Il test:
+
+- svuota il repository prima dell'esecuzione per garantire l'isolamento;
+- verifica che il job termini con `ExitStatus.COMPLETED`;
+- verifica che vengano salvati esattamente 2 componenti su 3 presenti nell'XML;
+- conferma indirettamente che il componente `SENS-044`, di classe `C`, sia stato filtrato e che la lettura dei fragment XML con namespace sia avvenuta correttamente.
+
+Esecuzione del test:
+
+```bash
+./mvnw test
+```
+
+## Avvio dell'applicazione
+
+Prerequisiti: JDK 21 e Maven, oppure il Maven Wrapper incluso nel repository.
+
+```bash
 ./mvnw clean spring-boot:run
-
-Running the Application
-Clone the repository:
+```
