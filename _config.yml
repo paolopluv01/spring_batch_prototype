@@ -1,0 +1,42 @@
+title: Spring Batch Prototype
+description: Un progetto prototipale di Spring Batch per l'elaborazione batch di dati
+baseurl: "/spring_batch_prototype"
+url: "https://paolopluv01.github.io"
+author: Paolo Pluv
+email: your-email@example.com
+
+# Build settings
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /docs/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "doc"
+
+# Exclude
+exclude:
+  - .gitignore
+  - .jekyll-cache
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
